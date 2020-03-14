@@ -5,9 +5,8 @@
       class="user-breadcrumb"
     >
       <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
-      <el-breadcrumb-item>活动管理</el-breadcrumb-item>
-      <el-breadcrumb-item>活动列表</el-breadcrumb-item>
-      <el-breadcrumb-item>活动详情</el-breadcrumb-item>
+      <el-breadcrumb-item>用户管理</el-breadcrumb-item>
+      <el-breadcrumb-item>用户列表</el-breadcrumb-item>
     </el-breadcrumb>
 
     <el-card class="user-card">
@@ -78,6 +77,7 @@
                 type="warning"
                 size="mini"
                 icon="el-icon-setting"
+                @click="showSetRoleDialog(scope.row)"
               ></el-button>
             </el-tooltip>
           </template>
@@ -144,6 +144,33 @@
       <span slot="footer" class="dialog-footer">
         <el-button @click="editDialogCancel">取 消</el-button>
         <el-button type="primary" @click="editUser">确 定</el-button>
+      </span>
+    </el-dialog>
+
+    <!-- 分配角色dialog -->
+    <el-dialog
+      @close="resetRoleDialog"
+      title="提示"
+      :visible.sync="setRoleDialogVisible"
+      width="50%"
+    >
+      <div>
+        <p>当前的用户：{{ userInfo.username }}</p>
+        <p>当前的角色：{{ userInfo.role_name }}</p>
+        <p>
+          角色选项：<el-select v-model="selectRoleId" placeholder="请选择">
+            <el-option
+              v-for="item in rolesList"
+              :key="item.value"
+              :value="item.id"
+              :label="item.roleName"
+            ></el-option
+          ></el-select>
+        </p>
+      </div>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="setRoleDialogCancel">取 消</el-button>
+        <el-button type="primary" @click="saveRoleInfo">确 定</el-button>
       </span>
     </el-dialog>
   </div>
@@ -219,7 +246,11 @@ export default {
         ]
       },
       editDialogVisible: false,
-      editForm: {}
+      editForm: {},
+      setRoleDialogVisible: false,
+      userInfo: {},
+      rolesList: [],
+      selectRoleId: ""
     };
   },
   methods: {
@@ -314,23 +345,12 @@ export default {
     editUser() {
       this.$refs.editFormRef.validate(async valid => {
         if (!valid) return;
-        const { data: res } = await this.$http.put(
-          "users/" + this.editForm.id,
-          {
-            email: this.editForm.email,
-            mobile: this.editForm.mobile
-          }
-        );
-        if (res.meta.status !== 200) {
-          this.$message({
-            type: "error",
-            message: "修改失败!",
-            duration: "1000",
-            center: true
-          });
-        }
+        await this.$http.put("users/" + this.editForm.id, {
+          email: this.editForm.email,
+          mobile: this.editForm.mobile
+        });
         this.editDialogVisible = false;
-        this.getUserList;
+        this.getUserList();
         this.$message({
           type: "success",
           message: "修改成功!",
@@ -356,6 +376,32 @@ export default {
           this.getUserList();
         })
         .catch(() => {});
+    },
+
+    // 分配角色
+    async showSetRoleDialog(userInfo) {
+      this.userInfo = userInfo;
+      const { data: res } = await this.$http.get(`roles`);
+      this.rolesList = res.data;
+      this.setRoleDialogVisible = true;
+    },
+
+    async saveRoleInfo() {
+      if (!this.selectRoleId) return;
+      await this.$http.put(`users/${this.userInfo.id}/role`, {
+        rid: this.selectRoleId
+      });
+
+      this.$message({
+        type: "success",
+        message: "更新角色成功"
+      });
+      this.getUserList();
+      this.setRoleDialogVisible = false;
+    },
+    resetRoleDialog() {
+      this.selectRoleId = "";
+      this.userInfo = "";
     }
   },
   created() {

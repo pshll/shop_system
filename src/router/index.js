@@ -10,8 +10,8 @@ const routes = [
     component: () => import("../views/Home.vue"),
     children: [
       { path: "users", component: () => import("../views/user/Users.vue") },
-      { path: "roles", component: () => import("../views/user/Users.vue") },
-      { path: "rights", component: () => import("../views/user/Users.vue") }
+      { path: "roles", component: () => import("../views/power/Roles.vue") },
+      { path: "rights", component: () => import("../views/power/Rights.vue") }
     ]
   },
   {
