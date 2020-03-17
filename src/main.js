@@ -7,6 +7,10 @@ import "./assets/css/global.css";
 
 import http from "./network/http";
 
+import TreeTable from "vue-table-with-tree-grid";
+
+Vue.component("tree-table", TreeTable);
+
 Vue.config.productionTip = false;
 Vue.prototype.$http = http;
 
