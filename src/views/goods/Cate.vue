@@ -55,7 +55,7 @@
             type="danger"
             icon="el-icon-delete"
             size="mini"
-            @click="showDeleteMessageBox(scope.row.cat_id)"
+            @click="removeCate(scope.row.cat_id)"
             >删除</el-button
           >
         </template>
@@ -281,7 +281,7 @@ export default {
     },
 
     // 删除分类消息弹框
-    showDeleteMessageBox(id) {
+    removeCate(id) {
       this.$confirm("是否删除该分类", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
