@@ -16,7 +16,12 @@ const routes = [
         path: "categories",
         component: () => import("../views/goods/Cate.vue")
       },
-      { path: "params", component: () => import("../views/goods/Params.vue") }
+      { path: "params", component: () => import("../views/goods/Params.vue") },
+      { path: "goods", component: () => import("../views/goods/List.vue") },
+      {
+        path: "goods/addGoods",
+        component: () => import("../views/goods/AddGoods.vue")
+      }
     ]
   },
   {
